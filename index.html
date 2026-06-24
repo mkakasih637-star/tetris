@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>TETRIS — Neon Edition</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ══════════════════════════════════
+       OVERLAY: GAME START SCREEN
+  ══════════════════════════════════ -->
+  <div id="start-screen" class="overlay active">
+    <div class="overlay-box">
+      <div class="logo-title">
+        <span class="logo-t">T</span><span class="logo-e">E</span><span class="logo-t2">T</span><span class="logo-r">R</span><span class="logo-i">I</span><span class="logo-s">S</span>
+      </div>
+      <p class="overlay-sub">NEON EDITION</p>
+      <button id="start-btn" class="btn-primary">START GAME</button>
+      <button id="settings-btn-start" class="btn-secondary">SETTINGS</button>
+      <p class="controls-hint">
+        ← → move &nbsp;|&nbsp; ↑ rotate &nbsp;|&nbsp; ↓ soft drop &nbsp;|&nbsp; SPACE hard drop &nbsp;|&nbsp; P pause
+      </p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       OVERLAY: GAME OVER SCREEN
+  ══════════════════════════════════ -->
+  <div id="gameover-screen" class="overlay">
+    <div class="overlay-box">
+      <h2 class="overlay-title">GAME OVER</h2>
+      <div class="overlay-stats">
+        <div class="stat-row"><span>SCORE</span><span id="go-score">0</span></div>
+        <div class="stat-row"><span>HIGH SCORE</span><span id="go-hiscore">0</span></div>
+        <div class="stat-row"><span>LEVEL</span><span id="go-level">0</span></div>
+        <div class="stat-row"><span>LINES</span><span id="go-lines">0</span></div>
+      </div>
+      <button id="restart-btn" class="btn-primary">PLAY AGAIN</button>
+      <button id="menu-btn" class="btn-secondary">MAIN MENU</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       OVERLAY: PAUSE SCREEN
+  ══════════════════════════════════ -->
+  <div id="pause-screen" class="overlay">
+    <div class="overlay-box">
+      <h2 class="overlay-title">PAUSED</h2>
+      <button id="resume-btn" class="btn-primary">RESUME</button>
+      <button id="restart-btn-pause" class="btn-secondary">RESTART</button>
+      <button id="settings-btn-pause" class="btn-secondary">SETTINGS</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       OVERLAY: SETTINGS PANEL
+  ══════════════════════════════════ -->
+  <div id="settings-screen" class="overlay">
+    <div class="overlay-box">
+      <h2 class="overlay-title">SETTINGS</h2>
+      <div class="settings-list">
+        <label class="setting-row">
+          <span>Sound Effects</span>
+          <div class="toggle-wrap">
+            <input type="checkbox" id="toggle-sound" checked />
+            <span class="toggle-slider"></span>
+          </div>
+        </label>
+        <label class="setting-row">
+          <span>Ghost Piece</span>
+          <div class="toggle-wrap">
+            <input type="checkbox" id="toggle-ghost" checked />
+            <span class="toggle-slider"></span>
+          </div>
+        </label>
+        <label class="setting-row">
+          <span>Animations</span>
+          <div class="toggle-wrap">
+            <input type="checkbox" id="toggle-anim" checked />
+            <span class="toggle-slider"></span>
+          </div>
+        </label>
+        <label class="setting-row">
+          <span>Vibration (mobile)</span>
+          <div class="toggle-wrap">
+            <input type="checkbox" id="toggle-vib" checked />
+            <span class="toggle-slider"></span>
+          </div>
+        </label>
+      </div>
+      <button id="settings-close-btn" class="btn-primary">CLOSE</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       OVERLAY: LEVEL-UP CELEBRATION
+  ══════════════════════════════════ -->
+  <div id="levelup-screen" class="overlay">
+    <div class="overlay-box levelup-box">
+      <div class="levelup-label">LEVEL UP!</div>
+      <div id="levelup-num" class="levelup-number">2</div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       MAIN GAME LAYOUT
+  ══════════════════════════════════ -->
+  <div id="game-wrapper">
+
+    <!-- LEFT HUD -->
+    <aside class="hud hud-left">
+      <div class="hud-panel">
+        <div class="panel-label">HOLD</div>
+        <canvas id="hold-canvas" width="120" height="120"></canvas>
+      </div>
+      <div class="hud-panel">
+        <div class="panel-label">SCORE</div>
+        <div id="score" class="hud-value">0</div>
+      </div>
+      <div class="hud-panel">
+        <div class="panel-label">BEST</div>
+        <div id="hiscore" class="hud-value accent">0</div>
+      </div>
+      <div class="hud-panel">
+        <div class="panel-label">COMBO</div>
+        <div id="combo" class="hud-value combo-val">—</div>
+      </div>
+    </aside>
+
+    <!-- GAME BOARD -->
+    <main class="board-area">
+      <canvas id="game-canvas"></canvas>
+      <!-- scan-line overlay for CRT effect -->
+      <div class="scanlines"></div>
+    </main>
+
+    <!-- RIGHT HUD -->
+    <aside class="hud hud-right">
+      <div class="hud-panel">
+        <div class="panel-label">NEXT</div>
+        <canvas id="next-canvas" width="120" height="320"></canvas>
+      </div>
+      <div class="hud-panel">
+        <div class="panel-label">LEVEL</div>
+        <div id="level" class="hud-value accent">1</div>
+      </div>
+      <div class="hud-panel">
+        <div class="panel-label">LINES</div>
+        <div id="lines" class="hud-value">0</div>
+      </div>
+      <div class="hud-panel btn-panel">
+        <button id="pause-btn" class="btn-icon" title="Pause (P)">⏸</button>
+        <button id="restart-btn-hud" class="btn-icon" title="Restart">↺</button>
+        <button id="settings-btn-hud" class="btn-icon" title="Settings">⚙</button>
+      </div>
+    </aside>
+
+  </div><!-- /#game-wrapper -->
+
+  <!-- ══════════════════════════════════
+       MOBILE TOUCH CONTROLS
+  ══════════════════════════════════ -->
+  <div id="mobile-controls">
+    <div class="mobile-row mobile-row-top">
+      <button class="mobile-btn" id="btn-hold" aria-label="Hold">
+        <span>HOLD</span>
+      </button>
+      <button class="mobile-btn" id="btn-rotate" aria-label="Rotate">
+        <span>↻</span>
+      </button>
+      <button class="mobile-btn" id="btn-hard-drop" aria-label="Hard Drop">
+        <span>⬇⬇</span>
+      </button>
+    </div>
+    <div class="mobile-row mobile-row-bottom">
+      <button class="mobile-btn mobile-btn-lg" id="btn-left" aria-label="Move Left">
+        <span>◀</span>
+      </button>
+      <button class="mobile-btn" id="btn-soft-drop" aria-label="Soft Drop">
+        <span>▼</span>
+      </button>
+      <button class="mobile-btn mobile-btn-lg" id="btn-right" aria-label="Move Right">
+        <span>▶</span>
+      </button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
